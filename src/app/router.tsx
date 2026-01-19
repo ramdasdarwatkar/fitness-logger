@@ -7,35 +7,40 @@ import { LogbookPage } from "../logbook/LogbookPage";
 import { ExercisesPage } from "../exercises/ExercisesPage";
 import { RequireAuth } from "../auth/RequireAuth";
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+  [
+    {
+      path: "/login",
+      element: <LoginPage />,
+    },
+    {
+      path: "/",
+      element: (
+        <RequireAuth>
+          <MainLayout />
+        </RequireAuth>
+      ),
+      children: [
+        {
+          index: true,
+          element: <HomePage />,
+        },
+        {
+          path: "logging/:sessionId",
+          element: <LoggingPage />,
+        },
+        {
+          path: "logbook/:sessionId",
+          element: <LogbookPage />,
+        },
+        {
+          path: "exercises",
+          element: <ExercisesPage />,
+        },
+      ],
+    },
+  ],
   {
-    path: "/login",
-    element: <LoginPage />,
+    basename: "/fitness-logger", // 🔑 MUST match repo name & Vite base
   },
-  {
-    path: "/",
-    element: (
-      <RequireAuth>
-        <MainLayout />
-      </RequireAuth>
-    ),
-    children: [
-      {
-        index: true,
-        element: <HomePage />,
-      },
-      {
-        path: "logging/:sessionId",
-        element: <LoggingPage />,
-      },
-      {
-        path: "logbook/:sessionId",
-        element: <LogbookPage />,
-      },
-      {
-        path: "exercises",
-        element: <ExercisesPage />,
-      },
-    ],
-  },
-]);
+);
