@@ -3,7 +3,7 @@ import { getCache } from "../storage/cache";
 import { LS_KEYS } from "../storage/localStorage.keys";
 
 const buildNotesFromCategoryIds = (categoryIds: string[]) => {
-  const categories = getCache(LS_KEYS.CATEGORIES) || [];
+  const categories = (getCache(LS_KEYS.CATEGORIES) as any[]) || [];
 
   return categories
     .filter((c: any) => categoryIds.includes(c.id))

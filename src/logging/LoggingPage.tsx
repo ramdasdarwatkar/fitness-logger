@@ -10,8 +10,8 @@ export const LoggingPage = () => {
   const { sessionId } = useParams();
   const navigate = useNavigate();
 
-  const exercises = getCache(LS_KEYS.EXERCISES) || [];
-  const categories = getCache(LS_KEYS.CATEGORIES) || [];
+  const exercises = (getCache(LS_KEYS.EXERCISES) as any[]) || [];
+  const categories = (getCache(LS_KEYS.CATEGORIES) as any[]) || [];
 
   const [session, setSession] = useState<any>(null);
   const [logsByExercise, setLogsByExercise] = useState<Record<string, any[]>>(

@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 export const ExercisesPage = () => {
   const navigate = useNavigate();
 
-  const categories = getCache(LS_KEYS.CATEGORIES) || [];
-  const exercises = getCache(LS_KEYS.EXERCISES) || [];
+  const categories = (getCache(LS_KEYS.CATEGORIES) as any[]) || [];
+  const exercises = (getCache(LS_KEYS.EXERCISES) as any[]) || [];
 
   // Group exercises by category
   const grouped = categories.map((cat: any) => ({

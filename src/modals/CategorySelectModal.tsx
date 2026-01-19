@@ -13,7 +13,7 @@ export const CategorySelectModal = ({
   onClose,
   onGo,
 }: Props) => {
-  const allCategories = getCache(LS_KEYS.CATEGORIES) || [];
+  const allCategories = (getCache(LS_KEYS.CATEGORIES) as any[]) || [];
 
   const categories = availableCategoryIds
     ? allCategories.filter((c: any) => availableCategoryIds.includes(c.id))

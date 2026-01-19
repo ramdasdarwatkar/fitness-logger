@@ -36,8 +36,11 @@ export const HomeDetails = ({ selectedDate }: Props) => {
   const getRemainingCategoryIds = () => {
     if (!session?.notes) return [];
 
-    const existingNames = session.notes.split(" - ").map((n) => n.trim());
-    const categories = getCache(LS_KEYS.CATEGORIES) || [];
+    const existingNames = session.notes
+      .split(" - ")
+      .map((n: string) => n.trim());
+
+    const categories = (getCache(LS_KEYS.CATEGORIES) as any[]) || [];
 
     return categories
       .filter((c: any) => !existingNames.includes(c.name))

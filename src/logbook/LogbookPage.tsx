@@ -8,7 +8,7 @@ import { LS_KEYS } from "../storage/localStorage.keys";
 
 export const LogbookPage = () => {
   const { sessionId } = useParams();
-  const exercises = getCache(LS_KEYS.EXERCISES) || [];
+  const exercises = (getCache(LS_KEYS.EXERCISES) as any[]) || [];
 
   const [session, setSession] = useState<any>(null);
   const [logsByExercise, setLogsByExercise] = useState<Record<string, any[]>>(
