@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../supabase/client";
+import PageTransition from "../shared/ui/PageTransition";
 
 interface Props {
   sessionId: string;
@@ -161,114 +162,123 @@ export const ExerciseLogger = ({
   /* ---------- UI ---------- */
 
   return (
-    <div className="bg-surface p-4 rounded-xl space-y-3">
-      <h3 className="font-medium">{exercise.name}</h3>
+    <PageTransition>
+      <div className="bg-surface p-4 rounded-xl space-y-3">
+        <h3 className="font-medium">{exercise.name}</h3>
 
-      {rows.map((row, idx) => (
-        <div key={idx} className="flex items-center gap-2 w-full">
-          {hasSets && (
-            <div className="w-6 text-center text-sm text-gray-400">
-              {idx + 1}
-            </div>
-          )}
+        {rows.map((row, idx) => (
+          <div key={idx} className="flex items-center gap-2 w-full">
+            {hasSets && (
+              <div className="w-6 text-center text-sm text-gray-400">
+                {idx + 1}
+              </div>
+            )}
 
-          {metrics.weight && (
-            <div className="flex items-center gap-1">
-              <button
-                className={BTN}
-                onClick={() => adjust(idx, "weight", -2.5)}
-              >
+            {metrics.weight && (
+              <div className="flex items-center gap-1">
+                <button
+                  className={BTN}
+                  onClick={() => adjust(idx, "weight", -2.5)}
+                >
+                  −
+                </button>
+                <input
+                  className={CONTROL_WIDE}
+                  placeholder="kg"
+                  value={row.weight}
+                  onChange={(e) => updateRow(idx, "weight", e.target.value)}
+                />
+                <button
+                  className={BTN}
+                  onClick={() => adjust(idx, "weight", 5)}
+                >
+                  +
+                </button>
+              </div>
+            )}
+
+            {metrics.reps && (
+              <div className="flex items-center gap-1">
+                <button className={BTN} onClick={() => adjust(idx, "reps", -1)}>
+                  −
+                </button>
+                <input
+                  className={CONTROL}
+                  placeholder="reps"
+                  value={row.reps}
+                  onChange={(e) => updateRow(idx, "reps", e.target.value)}
+                />
+                <button className={BTN} onClick={() => adjust(idx, "reps", 5)}>
+                  +
+                </button>
+              </div>
+            )}
+
+            {metrics.duration && (
+              <div className="flex items-center gap-1">
+                <input
+                  className={CONTROL}
+                  placeholder="min"
+                  value={row.durationMin}
+                  onChange={(e) =>
+                    updateRow(idx, "durationMin", e.target.value)
+                  }
+                />
+                <input
+                  className={CONTROL}
+                  placeholder="sec"
+                  value={row.durationSec}
+                  onChange={(e) =>
+                    updateRow(idx, "durationSec", e.target.value)
+                  }
+                />
+              </div>
+            )}
+
+            {metrics.distance && (
+              <div className="flex items-center gap-1">
+                <input
+                  className={CONTROL}
+                  placeholder="km"
+                  value={row.distanceKm}
+                  onChange={(e) => updateRow(idx, "distanceKm", e.target.value)}
+                />
+                <input
+                  className={CONTROL}
+                  placeholder="m"
+                  value={row.distanceM}
+                  onChange={(e) => updateRow(idx, "distanceM", e.target.value)}
+                />
+              </div>
+            )}
+
+            {hasSets && !isReadOnly && (
+              <button className={BTN_DANGER} onClick={() => removeRow(idx)}>
                 −
               </button>
-              <input
-                className={CONTROL_WIDE}
-                placeholder="kg"
-                value={row.weight}
-                onChange={(e) => updateRow(idx, "weight", e.target.value)}
-              />
-              <button className={BTN} onClick={() => adjust(idx, "weight", 5)}>
-                +
-              </button>
-            </div>
-          )}
+            )}
+          </div>
+        ))}
 
-          {metrics.reps && (
-            <div className="flex items-center gap-1">
-              <button className={BTN} onClick={() => adjust(idx, "reps", -1)}>
-                −
-              </button>
-              <input
-                className={CONTROL}
-                placeholder="reps"
-                value={row.reps}
-                onChange={(e) => updateRow(idx, "reps", e.target.value)}
-              />
-              <button className={BTN} onClick={() => adjust(idx, "reps", 5)}>
-                +
-              </button>
-            </div>
-          )}
+        {hasSets && !isReadOnly && (
+          <button
+            disabled={!canAddNext(rows[rows.length - 1])}
+            onClick={addNextRow}
+            className="w-full h-11 rounded-lg bg-gray-700 disabled:opacity-40"
+          >
+            + Add Set
+          </button>
+        )}
 
-          {metrics.duration && (
-            <div className="flex items-center gap-1">
-              <input
-                className={CONTROL}
-                placeholder="min"
-                value={row.durationMin}
-                onChange={(e) => updateRow(idx, "durationMin", e.target.value)}
-              />
-              <input
-                className={CONTROL}
-                placeholder="sec"
-                value={row.durationSec}
-                onChange={(e) => updateRow(idx, "durationSec", e.target.value)}
-              />
-            </div>
-          )}
-
-          {metrics.distance && (
-            <div className="flex items-center gap-1">
-              <input
-                className={CONTROL}
-                placeholder="km"
-                value={row.distanceKm}
-                onChange={(e) => updateRow(idx, "distanceKm", e.target.value)}
-              />
-              <input
-                className={CONTROL}
-                placeholder="m"
-                value={row.distanceM}
-                onChange={(e) => updateRow(idx, "distanceM", e.target.value)}
-              />
-            </div>
-          )}
-
-          {hasSets && !isReadOnly && (
-            <button className={BTN_DANGER} onClick={() => removeRow(idx)}>
-              −
-            </button>
-          )}
-        </div>
-      ))}
-
-      {hasSets && !isReadOnly && (
-        <button
-          disabled={!canAddNext(rows[rows.length - 1])}
-          onClick={addNextRow}
-          className="w-full h-11 rounded-lg bg-gray-700 disabled:opacity-40"
-        >
-          + Add Set
-        </button>
-      )}
-
-      {!isReadOnly && (
-        <button
-          onClick={save}
-          className="w-full h-11 rounded-lg bg-primary text-black font-semibold"
-        >
-          Save
-        </button>
-      )}
-    </div>
+        {!isReadOnly && (
+          <button
+            onClick={save}
+            className="w-full h-11 rounded-lg bg-primary text-black font-semibold"
+          >
+            Save
+          </button>
+        )}
+      </div>
+    </PageTransition>
   );
 };

@@ -5,6 +5,7 @@ import { LS_KEYS } from "../storage/localStorage.keys";
 import { getExerciseLogs } from "./exerciseDetails.service";
 import { MonthlyLineChart } from "../shared/charts/MonthlyLineChart";
 import { getPrimaryMetric, buildMonthlyHighest } from "./exerciseChart.utils";
+import PageTransition from "../shared/ui/PageTransition";
 
 const ExerciseDetailsPage = () => {
   const { exerciseId } = useParams();
@@ -97,91 +98,98 @@ const ExerciseDetailsPage = () => {
   /* ---------------- render ---------------- */
 
   return (
-    <div className="p-4 space-y-6">
-      {/* HEADER */}
-      <div>
-        <h1 className="text-xl font-semibold">{exercise.name}</h1>
-        <p className="text-sm text-gray-400">Monthly best & workout history</p>
-      </div>
+    <PageTransition>
+      <div className="p-4 space-y-6">
+        {/* HEADER */}
+        <div>
+          <h1 className="text-xl font-semibold">{exercise.name}</h1>
+          <p className="text-sm text-gray-400">
+            Monthly best & workout history
+          </p>
+        </div>
 
-      {/* CHART */}
-      <div className="bg-surface rounded-xl p-4">
-        <p className="text-sm text-gray-400 mb-2">Monthly Highest</p>
-        <MonthlyLineChart
-          data={chartData}
-          metricLabel="Weight"
-          prValue={globalBest}
-        />
-      </div>
+        {/* CHART */}
+        <div className="bg-surface rounded-xl p-4">
+          <p className="text-sm text-gray-400 mb-2">Monthly Highest</p>
+          <MonthlyLineChart
+            data={chartData}
+            metricLabel="Weight"
+            prValue={globalBest}
+          />
+        </div>
 
-      {/* HISTORY */}
-      <div className="space-y-4">
-        <h2 className="text-sm font-medium text-gray-400">Workout History</h2>
+        {/* HISTORY */}
+        <div className="space-y-4">
+          <h2 className="text-sm font-medium text-gray-400">Workout History</h2>
 
-        {loading && <p className="text-sm text-gray-500">Loading…</p>}
+          {loading && <p className="text-sm text-gray-500">Loading…</p>}
 
-        {!loading &&
-          Object.entries(groupedByDate)
-            .sort(([a], [b]) => b.localeCompare(a))
-            .map(([date, dayLogs]) => {
-              const dayBest = getDayBest(dayLogs);
-              const isPR = dayBest != null && dayBest === globalBest;
+          {!loading &&
+            Object.entries(groupedByDate)
+              .sort(([a], [b]) => b.localeCompare(a))
+              .map(([date, dayLogs]) => {
+                const dayBest = getDayBest(dayLogs);
+                const isPR = dayBest != null && dayBest === globalBest;
 
-              return (
-                <div key={date} className="bg-surface rounded-xl p-4 space-y-3">
-                  {/* HEADER */}
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium">{date}</p>
-                      <p className="text-xs text-gray-400">
-                        {dayLogs.length} sets
-                      </p>
+                return (
+                  <div
+                    key={date}
+                    className="bg-surface rounded-xl p-4 space-y-3"
+                  >
+                    {/* HEADER */}
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-sm font-medium">{date}</p>
+                        <p className="text-xs text-gray-400">
+                          {dayLogs.length} sets
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {isPR && (
+                          <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-400">
+                            PR
+                          </span>
+                        )}
+
+                        {dayBest != null && (
+                          <span className="text-xs text-gray-300">
+                            Best: {formatValue(dayBest)}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      {isPR && (
-                        <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-400">
-                          PR
-                        </span>
-                      )}
-
-                      {dayBest != null && (
-                        <span className="text-xs text-gray-300">
-                          Best: {formatValue(dayBest)}
-                        </span>
-                      )}
+                    {/* TABLE HEADER */}
+                    <div className="grid grid-cols-5 gap-2 text-xs text-gray-400">
+                      {dayLogs[0].sets && <span>Set</span>}
+                      {dayLogs[0].reps && <span>Reps</span>}
+                      {dayLogs[0].weight && <span>Kg</span>}
+                      {dayLogs[0].duration && <span>Min</span>}
+                      {dayLogs[0].distance && <span>Km</span>}
                     </div>
+
+                    {/* SET ROWS */}
+                    {dayLogs.map((log) => (
+                      <div
+                        key={log.id}
+                        className="grid grid-cols-5 gap-2 text-sm"
+                      >
+                        {log.sets && <span>{log.sets}</span>}
+                        {log.reps && <span>{log.reps}</span>}
+                        {log.weight && <span>{log.weight}</span>}
+                        {log.duration && (
+                          <span>{Math.round(log.duration / 60)}</span>
+                        )}
+                        {log.distance && <span>{log.distance}</span>}
+                      </div>
+                    ))}
                   </div>
-
-                  {/* TABLE HEADER */}
-                  <div className="grid grid-cols-5 gap-2 text-xs text-gray-400">
-                    {dayLogs[0].sets && <span>Set</span>}
-                    {dayLogs[0].reps && <span>Reps</span>}
-                    {dayLogs[0].weight && <span>Kg</span>}
-                    {dayLogs[0].duration && <span>Min</span>}
-                    {dayLogs[0].distance && <span>Km</span>}
-                  </div>
-
-                  {/* SET ROWS */}
-                  {dayLogs.map((log) => (
-                    <div
-                      key={log.id}
-                      className="grid grid-cols-5 gap-2 text-sm"
-                    >
-                      {log.sets && <span>{log.sets}</span>}
-                      {log.reps && <span>{log.reps}</span>}
-                      {log.weight && <span>{log.weight}</span>}
-                      {log.duration && (
-                        <span>{Math.round(log.duration / 60)}</span>
-                      )}
-                      {log.distance && <span>{log.distance}</span>}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+                );
+              })}
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

@@ -4,6 +4,7 @@ import { getMonthDaysFor, getDayStatus } from "./calendar.utils";
 import { useWorkoutStore } from "../workout/workout.store";
 import { fetchSessionsForMonth } from "../workout/workout.service";
 import { useAuthStore } from "../auth/auth.store";
+import PageTransition from "../shared/ui/PageTransition";
 
 interface Props {
   selectedDate: string;
@@ -32,46 +33,47 @@ export const CalendarView = ({ selectedDate, onSelect }: Props) => {
   }, [month, userId, setSessions]);
 
   return (
-    <div className="h-full px-4 py-3">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => setMonth(month.subtract(1, "month"))}
-          className="text-gray-400 text-lg"
-        >
-          ‹
-        </button>
+    <PageTransition>
+      <div className="h-full px-4 py-3">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => setMonth(month.subtract(1, "month"))}
+            className="text-gray-400 text-lg"
+          >
+            ‹
+          </button>
 
-        <h2 className="font-semibold">{month.format("MMMM YYYY")}</h2>
+          <h2 className="font-semibold">{month.format("MMMM YYYY")}</h2>
 
-        <button
-          onClick={() => setMonth(month.add(1, "month"))}
-          className="text-gray-400 text-lg"
-        >
-          ›
-        </button>
-      </div>
+          <button
+            onClick={() => setMonth(month.add(1, "month"))}
+            className="text-gray-400 text-lg"
+          >
+            ›
+          </button>
+        </div>
 
-      {/* Weekdays */}
-      <div className="grid grid-cols-7 text-xs text-gray-400 mb-2 text-center">
-        {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-          <div key={i}>{d}</div>
-        ))}
-      </div>
+        {/* Weekdays */}
+        <div className="grid grid-cols-7 text-xs text-gray-400 mb-2 text-center">
+          {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+            <div key={i}>{d}</div>
+          ))}
+        </div>
 
-      {/* Days */}
-      <div className="grid grid-cols-7 gap-y-2 text-center">
-        {days.map((date) => {
-          const status = getDayStatus(date, sessions);
-          const isFuture = dayjs(date).isAfter(dayjs(), "day");
-          const isSelected = selectedDate === date;
+        {/* Days */}
+        <div className="grid grid-cols-7 gap-y-2 text-center">
+          {days.map((date) => {
+            const status = getDayStatus(date, sessions);
+            const isFuture = dayjs(date).isAfter(dayjs(), "day");
+            const isSelected = selectedDate === date;
 
-          return (
-            <button
-              key={date}
-              disabled={isFuture}
-              onClick={() => onSelect(date)}
-              className={`
+            return (
+              <button
+                key={date}
+                disabled={isFuture}
+                onClick={() => onSelect(date)}
+                className={`
   h-10 w-10 mx-auto rounded-md
   flex items-center justify-center
   text-sm transition
@@ -84,12 +86,13 @@ export const CalendarView = ({ selectedDate, onSelect }: Props) => {
   ${isSelected ? "ring-2 ring-primary" : ""}
   ${isFuture ? "opacity-30" : ""}
 `}
-            >
-              {dayjs(date).date()}
-            </button>
-          );
-        })}
+              >
+                {dayjs(date).date()}
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };

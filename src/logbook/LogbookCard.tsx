@@ -1,3 +1,5 @@
+import PageTransition from "../shared/ui/PageTransition";
+
 interface Props {
   exerciseName: string;
   rows: any[];
@@ -20,23 +22,29 @@ const formatDistance = (km: number) => {
 
 export const LogbookCard = ({ exerciseName, rows }: Props) => {
   return (
-    <div className="rounded-2xl bg-surface p-4 shadow-sm">
-      <h3 className="font-medium mb-3">{exerciseName}</h3>
+    <PageTransition>
+      <div className="rounded-2xl bg-surface p-4 shadow-sm">
+        <h3 className="font-medium mb-3">{exerciseName}</h3>
 
-      <div className="space-y-2 text-sm">
-        {rows.map((r, i) => (
-          <div key={r.id} className="flex justify-between text-gray-300">
-            <span className="text-gray-400">Set {r.sets || i + 1}</span>
+        <div className="space-y-2 text-sm">
+          {rows.map((r, i) => (
+            <div key={r.id} className="flex justify-between text-gray-300">
+              <span className="text-gray-400">Set {r.sets || i + 1}</span>
 
-            <div className="flex gap-3 font-medium">
-              {r.weight != null && <span>{r.weight} kg</span>}
-              {r.reps != null && <span>{r.reps} reps</span>}
-              {r.duration != null && <span>{formatDuration(r.duration)}</span>}
-              {r.distance != null && <span>{formatDistance(r.distance)}</span>}
+              <div className="flex gap-3 font-medium">
+                {r.weight != null && <span>{r.weight} kg</span>}
+                {r.reps != null && <span>{r.reps} reps</span>}
+                {r.duration != null && (
+                  <span>{formatDuration(r.duration)}</span>
+                )}
+                {r.distance != null && (
+                  <span>{formatDistance(r.distance)}</span>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };

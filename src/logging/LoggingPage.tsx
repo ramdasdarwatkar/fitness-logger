@@ -5,6 +5,7 @@ import { getSessionById } from "../workout/session.service";
 import { getCache } from "../storage/cache";
 import { LS_KEYS } from "../storage/localStorage.keys";
 import { ExerciseLogger } from "./ExerciseLogger";
+import PageTransition from "../shared/ui/PageTransition";
 
 const LoggingPage = () => {
   const { sessionId } = useParams();
@@ -68,66 +69,68 @@ const LoggingPage = () => {
   /* ---------------- render ---------------- */
 
   return (
-    <div className="p-4 space-y-4">
-      {/* EXERCISE SELECT */}
-      <div className="space-y-1">
-        <label className="text-xs text-gray-400">Select exercise</label>
+    <PageTransition>
+      <div className="p-4 space-y-4">
+        {/* EXERCISE SELECT */}
+        <div className="space-y-1">
+          <label className="text-xs text-gray-400">Select exercise</label>
 
-        <select
-          value={selectedExerciseId}
-          onChange={(e) => setSelectedExerciseId(e.target.value)}
-          className="w-full p-3 rounded-xl bg-surface"
+          <select
+            value={selectedExerciseId}
+            onChange={(e) => setSelectedExerciseId(e.target.value)}
+            className="w-full p-3 rounded-xl bg-surface"
+          >
+            <option value="">Choose exercise</option>
+
+            {availableExercises.map((e: any) => {
+              const count = logsByExercise[e.id]?.length || 0;
+
+              return (
+                <option key={e.id} value={e.id}>
+                  {e.name}
+                  {count > 0 ? ` • ${count} sets logged` : ""}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
+        {/* LOGGER */}
+        {selectedExercise && (
+          <ExerciseLogger
+            key={selectedExercise.id}
+            sessionId={sessionId!}
+            exercise={selectedExercise}
+            previousLogs={logsByExercise[selectedExercise.id] || []}
+            onSaved={async () => {
+              // reload logs after save
+              const { data } = await supabase
+                .from("workout_logs")
+                .select("*")
+                .eq("session_id", sessionId)
+                .order("sets", { ascending: true });
+
+              const map: Record<string, any[]> = {};
+              data?.forEach((row: any) => {
+                if (!map[row.exercise_id]) map[row.exercise_id] = [];
+                map[row.exercise_id].push(row);
+              });
+
+              setLogsByExercise(map);
+              setSelectedExerciseId("");
+            }}
+          />
+        )}
+
+        {/* FINISH */}
+        <button
+          onClick={() => navigate(`/logbook/${sessionId}`)}
+          className="w-full py-3 rounded-xl bg-red-600 text-white"
         >
-          <option value="">Choose exercise</option>
-
-          {availableExercises.map((e: any) => {
-            const count = logsByExercise[e.id]?.length || 0;
-
-            return (
-              <option key={e.id} value={e.id}>
-                {e.name}
-                {count > 0 ? ` • ${count} sets logged` : ""}
-              </option>
-            );
-          })}
-        </select>
+          Finish Session
+        </button>
       </div>
-
-      {/* LOGGER */}
-      {selectedExercise && (
-        <ExerciseLogger
-          key={selectedExercise.id}
-          sessionId={sessionId!}
-          exercise={selectedExercise}
-          previousLogs={logsByExercise[selectedExercise.id] || []}
-          onSaved={async () => {
-            // reload logs after save
-            const { data } = await supabase
-              .from("workout_logs")
-              .select("*")
-              .eq("session_id", sessionId)
-              .order("sets", { ascending: true });
-
-            const map: Record<string, any[]> = {};
-            data?.forEach((row: any) => {
-              if (!map[row.exercise_id]) map[row.exercise_id] = [];
-              map[row.exercise_id].push(row);
-            });
-
-            setLogsByExercise(map);
-            setSelectedExerciseId("");
-          }}
-        />
-      )}
-
-      {/* FINISH */}
-      <button
-        onClick={() => navigate(`/logbook/${sessionId}`)}
-        className="w-full py-3 rounded-xl bg-red-600 text-white"
-      >
-        Finish Session
-      </button>
-    </div>
+    </PageTransition>
   );
 };
 

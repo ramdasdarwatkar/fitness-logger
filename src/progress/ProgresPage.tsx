@@ -6,6 +6,8 @@ import type { MetricConfig } from "./progress.types";
 import { getMetricHistory } from "./progress.service";
 import { formatMetricValue } from "./progress.utils";
 import { ProgressLineChart } from "../shared/charts/ProgressLineChart";
+import Skeleton from "../shared/ui/Skeleton";
+import PageTransition from "../shared/ui/PageTransition";
 
 const ProgressPage = () => {
   const [metric, setMetric] = useState<MetricConfig>(BODY_METRICS[0]);
@@ -24,65 +26,77 @@ const ProgressPage = () => {
   }, [metric]);
 
   return (
-    <div className="p-4 space-y-6">
-      {/* HEADER */}
-      <h1 className="text-lg font-semibold">Progress</h1>
+    <PageTransition>
+      <div className="p-4 space-y-6">
+        {/* HEADER */}
+        <h1 className="text-lg font-semibold">Progress</h1>
 
-      {/* METRIC SELECTOR */}
-      <select
-        value={metric.key}
-        onChange={(e) => {
-          const selected = BODY_METRICS.find((m) => m.key === e.target.value);
-          if (selected) setMetric(selected);
-        }}
-        className="w-full p-3 rounded-xl bg-surface"
-      >
-        {BODY_METRICS.map((m) => (
-          <option key={m.key} value={m.key}>
-            {m.label}
-          </option>
-        ))}
-      </select>
+        {/* METRIC SELECTOR */}
+        <select
+          value={metric.key}
+          onChange={(e) => {
+            const selected = BODY_METRICS.find((m) => m.key === e.target.value);
+            if (selected) setMetric(selected);
+          }}
+          className="w-full p-3 rounded-xl bg-surface"
+        >
+          {BODY_METRICS.map((m) => (
+            <option key={m.key} value={m.key}>
+              {m.label}
+            </option>
+          ))}
+        </select>
 
-      {/* CHART */}
-      {!loading && history.length > 0 && (
-        <ProgressLineChart data={history} metric={metric} />
-      )}
-
-      {/* HISTORY */}
-      <div className="space-y-2">
-        <h2 className="text-sm font-medium text-gray-400">History</h2>
-
-        {loading && <p className="text-sm text-gray-500">Loading…</p>}
-
-        {!loading && history.length === 0 && (
-          <p className="text-sm text-gray-500">No data recorded yet.</p>
+        {/* CHART */}
+        {!loading && history.length > 0 && (
+          <ProgressLineChart data={history} metric={metric} />
         )}
 
-        {!loading &&
-          history
-            .slice()
-            .reverse()
-            .map((row) => {
-              const formatted = formatMetricValue(metric, row.value);
+        {/* HISTORY */}
+        <div className="space-y-2">
+          <h2 className="text-sm font-medium text-gray-400">History</h2>
 
-              return (
-                <div
-                  key={row.date}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <span className="text-gray-400">
-                    {dayjs(row.date).format("DD MMM YYYY")}
-                  </span>
+          {loading && (
+            <>
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-64 w-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            </>
+          )}
 
-                  <span className="font-medium">
-                    {formatted.value} {formatted.unit}
-                  </span>
-                </div>
-              );
-            })}
+          {!loading && history.length === 0 && (
+            <p className="text-sm text-gray-500">No data recorded yet.</p>
+          )}
+
+          {!loading &&
+            history
+              .slice()
+              .reverse()
+              .map((row) => {
+                const formatted = formatMetricValue(metric, row.value);
+
+                return (
+                  <div
+                    key={row.date}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="text-gray-400">
+                      {dayjs(row.date).format("DD MMM YYYY")}
+                    </span>
+
+                    <span className="font-medium">
+                      {formatted.value} {formatted.unit}
+                    </span>
+                  </div>
+                );
+              })}
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

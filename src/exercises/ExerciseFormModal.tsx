@@ -2,6 +2,7 @@ import { useState } from "react";
 import { setCache, getCache } from "../storage/cache";
 import { LS_KEYS } from "../storage/localStorage.keys";
 import { createExercise, updateExercise } from "./exercise.service";
+import PageTransition from "../shared/ui/PageTransition";
 
 interface Props {
   exercise?: any; // if present → edit mode
@@ -66,62 +67,67 @@ export const ExerciseFormModal = ({ exercise, onClose, onSaved }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-surface w-full max-w-sm rounded-xl p-5 space-y-4">
-        <h2 className="text-lg font-semibold">
-          {exercise ? "Edit Exercise" : "Add Exercise"}
-        </h2>
+    <PageTransition>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div className="bg-surface w-full max-w-sm rounded-xl p-5 space-y-4">
+          <h2 className="text-lg font-semibold">
+            {exercise ? "Edit Exercise" : "Add Exercise"}
+          </h2>
 
-        {/* Name */}
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Exercise name"
-          className="w-full p-3 rounded bg-bg"
-        />
+          {/* Name */}
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Exercise name"
+            className="w-full p-3 rounded bg-bg"
+          />
 
-        {/* Category */}
-        <select
-          value={categoryId ?? ""}
-          onChange={(e) => setCategoryId(e.target.value || null)}
-          className="w-full p-3 rounded bg-bg"
-        >
-          <option value="">Select category</option>
-          {categories.map((c: any) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-
-        {/* Metrics */}
-        <div className="space-y-2">
-          <p className="text-sm text-gray-400">Metrics</p>
-          {["sets", "reps", "weight", "duration", "distance"].map((m) => (
-            <label key={m} className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={metrics[m]}
-                onChange={() => toggleMetric(m)}
-              />
-              <span className="capitalize">{m}</span>
-            </label>
-          ))}
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3 pt-2">
-          <button onClick={onClose} className="flex-1 py-2 rounded bg-gray-700">
-            Cancel
-          </button>
-          <button
-            onClick={save}
-            className="flex-1 py-2 rounded bg-primary text-black"
+          {/* Category */}
+          <select
+            value={categoryId ?? ""}
+            onChange={(e) => setCategoryId(e.target.value || null)}
+            className="w-full p-3 rounded bg-bg"
           >
-            Save
-          </button>
+            <option value="">Select category</option>
+            {categories.map((c: any) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Metrics */}
+          <div className="space-y-2">
+            <p className="text-sm text-gray-400">Metrics</p>
+            {["sets", "reps", "weight", "duration", "distance"].map((m) => (
+              <label key={m} className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={metrics[m]}
+                  onChange={() => toggleMetric(m)}
+                />
+                <span className="capitalize">{m}</span>
+              </label>
+            ))}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={onClose}
+              className="flex-1 py-2 rounded bg-gray-700"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={save}
+              className="flex-1 py-2 rounded bg-primary text-black"
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };

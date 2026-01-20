@@ -3,6 +3,7 @@ import { LS_KEYS } from "../storage/localStorage.keys";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ExerciseFormModal } from "./ExerciseFormModal";
+import PageTransition from "../shared/ui/PageTransition";
 
 const ExercisesPage = () => {
   const navigate = useNavigate();
@@ -38,39 +39,42 @@ const ExercisesPage = () => {
   };
 
   return (
-    <div className="p-4 space-y-6">
-      {/* HEADER */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Exercises</h1>
-        <button
-          onClick={openAdd}
-          className="px-3 py-2 rounded bg-primary text-black"
-        >
-          + Add
-        </button>
-      </div>
+    <PageTransition>
+      <div className="p-4 space-y-6">
+        {/* HEADER */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold">Exercises</h1>
+          <button
+            onClick={openAdd}
+            className="px-3 py-2 rounded bg-primary text-black"
+          >
+            + Add
+          </button>
+        </div>
 
-      {/* SEARCH */}
-      <input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search exercise..."
-        className="w-full px-4 py-3 rounded-xl bg-surface outline-none"
-      />
+        {/* SEARCH */}
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search exercise..."
+          className="w-full px-4 py-3 rounded-xl bg-surface outline-none"
+        />
 
-      {grouped.length === 0 && (
-        <p className="text-sm text-gray-400">No exercises found</p>
-      )}
+        {grouped.length === 0 && (
+          <p className="text-sm text-gray-400">No exercises found</p>
+        )}
 
-      {grouped.map((cat: any) => (
-        <div key={cat.id}>
-          <h2 className="text-sm font-medium text-gray-400 mb-2">{cat.name}</h2>
+        {grouped.map((cat: any) => (
+          <div key={cat.id}>
+            <h2 className="text-sm font-medium text-gray-400 mb-2">
+              {cat.name}
+            </h2>
 
-          <div className="space-y-2">
-            {cat.exercises.map((ex: any) => (
-              <div
-                key={ex.id}
-                className="
+            <div className="space-y-2">
+              {cat.exercises.map((ex: any) => (
+                <div
+                  key={ex.id}
+                  className="
                   flex items-center justify-between
                   px-4 py-3
                   rounded-xl
@@ -78,19 +82,19 @@ const ExercisesPage = () => {
                   hover:bg-white/10
                   transition
                 "
-              >
-                {/* 👉 CLICK NAME = DETAILS */}
-                <button
-                  onClick={() => navigate(`/exercise/${ex.id}`)}
-                  className="flex-1 text-left font-medium"
                 >
-                  {ex.name}
-                </button>
+                  {/* 👉 CLICK NAME = DETAILS */}
+                  <button
+                    onClick={() => navigate(`/exercise/${ex.id}`)}
+                    className="flex-1 text-left font-medium"
+                  >
+                    {ex.name}
+                  </button>
 
-                {/* ✏️ EDIT BUTTON */}
-                <button
-                  onClick={() => openEdit(ex)}
-                  className="
+                  {/* ✏️ EDIT BUTTON */}
+                  <button
+                    onClick={() => openEdit(ex)}
+                    className="
                     text-xs
                     px-2 py-1
                     rounded
@@ -98,23 +102,24 @@ const ExercisesPage = () => {
                     hover:text-white
                     hover:bg-white/10
                   "
-                >
-                  Edit
-                </button>
-              </div>
-            ))}
+                  >
+                    Edit
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-      {showModal && (
-        <ExerciseFormModal
-          exercise={editingExercise}
-          onClose={() => setShowModal(false)}
-          onSaved={() => {}}
-        />
-      )}
-    </div>
+        {showModal && (
+          <ExerciseFormModal
+            exercise={editingExercise}
+            onClose={() => setShowModal(false)}
+            onSaved={() => {}}
+          />
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

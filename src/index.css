@@ -17,3 +17,13 @@ html, body {
 .drawer-btn:hover {
   background: rgba(255,255,255,0.08);
 }
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
