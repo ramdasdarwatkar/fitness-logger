@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  @apply bg-bg text-white;
+}
+
+/* index.css */
+.drawer-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: transparent;
+}
+.drawer-btn:hover {
+  background: rgba(255,255,255,0.08);
+}
