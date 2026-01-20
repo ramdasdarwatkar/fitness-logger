@@ -1,4 +1,4 @@
-import{f as e,l as t,m as n,o as r,s as i,t as a}from"./index-CtcPduhe.js";import{_ as o,a as s,i as c,n as l,p as u,r as d,t as f}from"./LineChart-CwkZDJ3l.js";import{t as p}from"./PageTransition-oMxCtWyv.js";var m=n();const h=async e=>{let{data:t,error:n}=await r.from(`workout_logs`).select(`
+import{f as e,l as t,m as n,o as r,s as i,t as a}from"./index-BOkDHWZI.js";import{_ as o,a as s,i as c,n as l,p as u,r as d,t as f}from"./LineChart-gzg2hyum.js";import{t as p}from"./PageTransition-DCmixjYD.js";var m=n();const h=async e=>{let{data:t,error:n}=await r.from(`workout_logs`).select(`
       id,
       sets,
       reps,
